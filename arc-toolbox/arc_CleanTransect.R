@@ -1,33 +1,35 @@
 tool_exec <- function(in_params, out_params) {
-  # library(arcgisbinding)
-  # arc.check_product()
-  
-  # Load dependencies...
-  path_invest = in_params$path_invest               # Path to invest tool directory
-  setwd(path_invest)
-  source("./arc-toolbox/arc_RLibraries.R")
   
   
   
-  # Get inputs 
+# Load package
+print("Loading library...")
+library(MNAI.CPBT)
+
+  
+# Get inputs 
   point_elev      <- in_params$point_elev
   RadLineDist     <- in_params$RadLineDist
   MaxOnshoreDist  <- in_params$MaxOnshoreDist
   trimline        <- in_params$trimline
   
-  
-  # Open
-  importGeom = arc.open(point_elev)
+
+# Get input and output parameters
+  print("Loading Spatial...")
+  getpath = in_params$point_elev
+  importGeom = arc.open(getpath)
   arcgeom = arc.select(importGeom)
   point_elev =  arc.data2sf(arcgeom)
-  
-  
-  if(length(trimline) == 0){
+
+
+if(length(trimline) == 0){
+    
     use_trimline = FALSE
     trimline = NA
     print("Not using trimline...")
     
-  } else {
+} else {
+    
     print("Using trimline...")
     importGeom = arc.open(trimline)
     arcgeom = arc.select(importGeom)
@@ -35,25 +37,18 @@ tool_exec <- function(in_params, out_params) {
     
     use_trimline = TRUE
     trimline = trimline
-  }
-  
+}    
+
 
   
+pt_exp <- MNAI.CPBT::CleanTransect(
+  point_elev = point_elev,
+  RadLineDist = RadLineDist,
+  MaxOnshoreDist = MaxOnshoreDist,
+  trimline = trimline
+)
   
-  #--------------------------------------------  
-  # Clean and fix transects
-  # need to make sure the direction is all the same ... need to exclude shallow islands 
-  print("Running function...")
-  
-  pt_exp <- CleanTransect(
-    point_elev = point_elev, 
-    RadLineDist = RadLineDist,
-    MaxOnshoreDist = MaxOnshoreDist,
-    use_trimline = use_trimline,
-    trimline = trimline
-  )
-  
-  print("Saving output...")
+   print("Saving output...")
   
   # Save outputs
   clean_point_elev_path <- out_params$clean_point_elev_path
@@ -64,6 +59,8 @@ tool_exec <- function(in_params, out_params) {
   print("Function Completed...")
   
   return(out_params)
+   
+  
   
   
   

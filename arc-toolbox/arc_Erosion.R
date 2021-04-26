@@ -1,33 +1,15 @@
 tool_exec <- function(in_params, out_params) {
   
-  # library(arcgisbinding)
-  # arc.check_product()
-  
-  # Load dependencies...
-  path_invest = in_params$path_invest               # Path to invest tool directory
-  setwd(path_invest)
-  source("./arc-toolbox/arc_RLibraries.R")
-  
-  print("get inputs")
-  
-  # Get inputs 
-  fs = in_params$fs
-  if(length(fs) == 0){
-    fs = NA
-  } else {
-    importGeom = arc.open(fs)
-    arcgeom = arc.select(importGeom)
-    fs =  arc.data2sf(arcgeom)
-  }
-  
-  
-  
-  
+
+  # Load package
+  print("Loading library...")
+  library(MNAI.CPBT)
+
+
+
   Ho                   <- in_params$Ho
   To                   <- in_params$To
-  surge_elevation      <- in_params$surge_elevation
-  mean_high_water      <- in_params$mean_high_water
-  sea_level_rise       <- in_params$sea_level_rise
+  total_wsl_adj        <- in_params$total_wsl_adj
   storm_duration       <- in_params$storm_duration
   ShorelinePointDist   <- in_params$ShorelinePointDist
   PropValue            <- in_params$PropValue
@@ -35,74 +17,53 @@ tool_exec <- function(in_params, out_params) {
   TimeHoriz            <- in_params$TimeHoriz
   Tr                   <- in_params$Tr
   
-  
-  sed_size            <- in_params$sed_size
-  berm_lengt          <- in_params$berm_lengt
-  berm_heigh          <- in_params$berm_heigh
-  dune_heigh          <- in_params$dune_heigh
-  fore_slp            <- in_params$fore_slp
+
+  mean_high_water     <- in_params$mean_high_water
+  mean_sea_level     <- in_params$mean_sea_level
 
 
-  
-  
-  wave_dat       <- in_params$wave_dat
-  importGeom = arc.open(wave_dat)
+
+  BeachAttributes      <- in_params$BeachAttributes
+  wave_data            <- in_params$wave_data
+
+
+  # Load data
+  importGeom = arc.open(BeachAttributes)
   arcgeom = arc.select(importGeom)
-  wave_dat =  arc.data2sf(arcgeom)
+  BeachAttributes =  arc.data2sf(arcgeom)
   
-  
-  
-  dat       <- in_params$dat
-  importGeom = arc.open(dat)
+  # Load data
+  importGeom = arc.open(wave_data)
   arcgeom = arc.select(importGeom)
-  dat =  arc.data2sf(arcgeom)
+  wave_data =  arc.data2sf(arcgeom)
   
-  
-  
-  total_wsl_adj = surge_elevation + mean_high_water + sea_level_rise
-  
-  
- 
-  
-  #--------------------------------------------
-  # Calculate Erosion Distance
-  #--------------------------------------------
-  print("join start")
-  
-  
-  # Link profiles to shoreline berms
-  if(!(is.na(fs))){
-    fs_dat <- LinkProfilesToBerms(path_foreshore=NA, dat, fs=fs)
-  } else {
-    line_id <- sort(unique(wave_dat$line_id))
-    fs_dat <- data.frame(line_id = line_id,
-                         sed_size = sed_size,
-                         berm_lengt = berm_lengt,
-                         berm_heigh = berm_heigh,
-                         dune_heigh = dune_heigh,
-                         fore_slp = fore_slp)
-  }
-  
-  # Load sediment size lookup
-  ssf_lookup = func_getSSF()
-  
-  print("ErosionTransectsUtil start")
-  
-  # Calculate Runup and Erosion
-  erosion <- ErosionTransectsUtil(Ho=Ho,
-                                  To=To,
-                                  ssf_lookup = ssf_lookup,
-                                  total_wsl_adj = total_wsl_adj,
-                                  fs_dat = fs_dat,
-                                  wave_dat = wave_dat,
-                                  storm_duration = storm_duration,
-                                  Tr = Tr,
-                                  Longshore = ShorelinePointDist, 
-                                  PropValue = PropValue,
-                                  disc = disc,
-                                  TimeHoriz = TimeHoriz)
-  
-  print("ErosionTransectsUtil comp")
+
+
+
+linkbeach <- MNAI.CPBT::LinkProfilesToBeaches(
+  BeachAttributes = BeachAttributes,
+  dat = wave_data
+)
+
+
+
+erosion <- MNAI.CPBT::ErosionTransectsUtil(
+  Ho = Ho,
+  To = To,
+  total_wsl_adj = total_wsl_adj,
+  linkbeach = linkbeach,
+  wave_data = wave_data,
+  storm_duration = storm_duration,
+  Longshore = ShorelinePointDist,
+  PropValue = PropValue,
+  Tr = Tr,
+  disc = disc,
+  TimeHoriz = TimeHoriz,
+  mean_sea_level = mean_sea_level,
+  mean_high_water = mean_high_water
+)
+
+
 
   # Save outputs
   erosion_dat_path <- out_params$erosion_dat_path
@@ -111,9 +72,24 @@ tool_exec <- function(in_params, out_params) {
   
   
   # Make spatial points
-  wave_dat <- wave_dat[which(!(is.na(wave_dat$elev))),]
-  wave_dat$xminpos <- abs(wave_dat$Xpos)
-  smpt <- wave_dat %>% group_by(line_id) %>% slice(which.min(H_noveg))
+  wave_data <- wave_data[which(!(is.na(wave_data$elev))),]
+  wave_data$xminpos <- abs(wave_data$Xpos)
+
+
+  uids <- unique(wave_data$line_id)
+  build_obj <- list()
+  for(i in 1:length(uids)){
+    this_id <- uids[i]
+    ttran <- wave_data[which(wave_data$line_id == this_id), ]
+    mmin <- min(ttran$H_noveg, na.rm=TRUE)
+    keep <- ttran[which(ttran$H_noveg == mmin),]
+    keep <- keep[1,]
+    build_obj[[i]] <- keep
+  }
+
+  smpt <- do.call("rbind", build_obj)
+
+  #smpt <- wave_data %>% group_by(line_id) %>% slice(which.min(H_noveg))
   smpt$transect_id <- smpt$line_id
   smpt <- smpt[,c("transect_id")]
   smpt2 <- merge(smpt, erosion, by.x="transect_id", by.y="transect_id")
@@ -127,13 +103,13 @@ tool_exec <- function(in_params, out_params) {
   
   
   
-  
-  # Summarize shoreline erosion across whole shoreline
-  ero_tot <- func_ErosionTotals(dat = dat, erosion = erosion,
-                                Longshore = ShorelinePointDist, # USE POINT DISTANCE AS LONGSHORE
-                                PropValue = PropValue, Tr = Tr,
-                                disc = disc, TimeHoriz = TimeHoriz)
-  
+  ero_tot <- MNAI.CPBT::ErosionTotals (
+              wave_data = wave_data,
+              erosion = erosion,
+              Longshore = ShorelinePointDist
+            )
+
+
   ero_tot_out <- data.frame(
     TotalErosionVeg_m2 = ero_tot$total_erosion_Veg_m2,
     TotalErosionNoVeg_m2 = ero_tot$total_erosion_NoVeg_m2,

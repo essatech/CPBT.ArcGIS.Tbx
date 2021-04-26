@@ -1,21 +1,19 @@
 tool_exec <- function(in_params, out_params) {
-  # library(arcgisbinding)
-  # arc.check_product()
   
   
-  # Load dependencies...
-  path_invest = in_params$path_invest               # Path to invest tool directory
-  setwd(path_invest)
-  source("./arc-toolbox/arc_RLibraries.R")
   
   
-  # Get inputs 
+  # Load package
+  print("Loading library...")
+  library(MNAI.CPBT)
+
+
+   # Get inputs 
   dat         <- in_params$dat
-  surge_elevation      <- in_params$surge_elevation
-  mean_high_water       <- in_params$mean_high_water
-  sea_level_rise   <- in_params$sea_level_rise
+  total_wsl_adj   <- in_params$total_wsl_adj
   Ho   <- in_params$Ho
   To   <- in_params$To
+  tran_force   <- in_params$tran_force
 
   
   # Load data
@@ -23,26 +21,16 @@ tool_exec <- function(in_params, out_params) {
   arcgeom = arc.select(importGeom)
   dat =  arc.data2sf(arcgeom)
   
-  print('INPUT POINTS...')
-  print(nrow(dat))
-  print(class(dat))
   
-  #--------------------------------------------
-  # Wave model
-  #--------------------------------------------
-  # determine storm surge flood
-  total_wsl_adj = surge_elevation + mean_high_water + sea_level_rise
   
-  print(paste0("Total WSE Adj: ", total_wsl_adj))
-  print(paste0("Ho: ", Ho))
-  print(paste0("To: ", To))
-  
-  # run wave attenuation model
-  wave_dat <- WaveModel(dat,
-                        total_wsl_adj,
-                        Ho=Ho,
-                        To=To)
-  #plot(st_geometry(wave_dat), pch=19, cex=0.1)
+  wave_dat <- MNAI.CPBT::WaveModel(
+              dat = dat,
+              total_wsl_adj = total_wsl_adj,
+              Ho = Ho,
+              To = To,
+              tran_force = tran_force,
+              print_debug = FALSE
+  )
   
   # Save outputs
   wave_dat_path <- out_params$wave_dat_path
@@ -58,11 +46,7 @@ tool_exec <- function(in_params, out_params) {
   
   
   
-  
-  
-  
-  
-  
+
   
   
   
