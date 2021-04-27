@@ -8,7 +8,7 @@ if(!("remotes" %in% rownames(installed.packages()))){
 print("Load remotes")
 library(remotes)
 
-# Remove package if already installed and reinstall
+# Remove package if already  installed and reinstall
 if("MNAI.CPBT" %in% rownames(installed.packages())){
     print("Remove old package")
     #remove.packages("MNAI.CPBT")
