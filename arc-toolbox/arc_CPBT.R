@@ -120,7 +120,8 @@ CPBT(
   disc = disc,
   TimeHoriz = TimeHoriz,
   Bldgs = Bldgs,
-  export_report = TRUE
+  export_report = TRUE,
+  export_spatial_dat = TRUE
 )
 
 
