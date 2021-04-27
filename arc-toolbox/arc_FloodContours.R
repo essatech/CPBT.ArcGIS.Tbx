@@ -54,6 +54,11 @@ fc_obj <- MNAI.CPBT::FloodContours(
 
  print("write...")
 
+# Set values to NA
+  r_d_veg[r_d_veg>0] <- NA
+  r_d_noveg[r_d_noveg>0] <- NA
+
+
   # Save outputs
   r_d_veg_path <- out_params$r_d_veg_path
   print("Writting output 1/2 ...")

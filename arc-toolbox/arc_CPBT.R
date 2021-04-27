@@ -77,7 +77,7 @@ Bldgs0 = in_params$Bldgs
 importGeom = arc.open(Bldgs0)
 arcgeom = arc.select(importGeom)
 Bldgs0 =  arc.data2sf(arcgeom)
-
+Bldgs = Bldgs0
 
 
 Vegetation0 <- in_params$Vegetation

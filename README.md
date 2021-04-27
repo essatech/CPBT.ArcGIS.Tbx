@@ -10,12 +10,12 @@ Stable](https://img.shields.io/badge/lifecycle-stable.svg)](https://www.tidyvers
 <!-- badges: end -->
 
 
-The **MNAI.CPBT** ArcGIS Toolbox contains functions to model coastal wave attenuation, shoreline erosion and flooding. This package is an adaptation of the Natural Capital [InVEST](https://naturalcapitalproject.stanford.edu/software/invest) Wave Attenuation and Erosion Reduction ArcGIS Toolbox originally developed by Greg Guannel. Functions and workflows have been modified for evaluating municipal natural assets. This tool is a software product of the [Municipal Natural Asset Initiative MNAI](https://mnai.ca/) developed in conjunction with [ESSA Technologies Ltd.](https://essa.com/) and [CBCL Ltd.](https://www.cbcl.ca/).
+The **CPBT (Coastal Protection and Benefit Tool)** ArcGIS Toolbox contains functions to model coastal wave attenuation, shoreline erosion and flooding. This package is an adaptation of the Natural Capital [InVEST](https://naturalcapitalproject.stanford.edu/software/invest) Wave Attenuation and Erosion Reduction ArcGIS Toolbox originally developed by Greg Guannel. Functions and workflows have been modified for evaluating municipal natural assets. This tool is a software product of the [Municipal Natural Asset Initiative MNAI](https://mnai.ca/) developed in conjunction with [ESSA Technologies Ltd.](https://essa.com/) and [CBCL Ltd.](https://www.cbcl.ca/).
 
 
 ## Guidance Document
 
-We recommend that all interested users consult the MNAI - CPBT: Guidance Document to understand the use cases, strengths, and limitations of this toolbox.
+We recommend that all interested users consult the CPBT: Guidance Document to understand the use cases, strengths, and limitations of this toolbox.
 [TODO: ADD LINK TO GUIDANCE DOCUMENT - IN PREP](https://mnai.ca/key-documents/).
 
 ## Installation

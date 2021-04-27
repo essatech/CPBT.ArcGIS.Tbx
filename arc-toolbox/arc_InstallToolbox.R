@@ -15,7 +15,7 @@ if("MNAI.CPBT" %in% rownames(installed.packages())){
 }
 
 print("Install MNAI.CPBT")
-remotes::install_github("mattjbayly/MNAI.CPBT", upgrade ='always', force = TRUE)
+remotes::install_github("essatech/MNAI.CPBT", upgrade ='always', force = TRUE)
 
 # Load package
 print("Load MNAI.CPBT")
