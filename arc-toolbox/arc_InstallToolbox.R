@@ -2,8 +2,12 @@ tool_exec <- function(in_params, out_params) {
 
 # Make sure remotes is installed
 if(!("remotes" %in% rownames(installed.packages()))){
-    install.packages("remotes")
+    print("Installing remotes")
+    # install.packages("remotes")
 }
+
+install.packages("remotes", upgrade ='always', force = TRUE)
+
 
 print("Load remotes")
 library(remotes)

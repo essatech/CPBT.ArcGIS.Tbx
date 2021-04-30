@@ -51,7 +51,9 @@ pt_exp <- MNAI.CPBT::CleanTransect(
    print("Saving output...")
   
   # Save outputs
+
   clean_point_elev_path <- out_params$clean_point_elev_path
+  
   print("Writting output ...")
 
   arc.write(clean_point_elev_path, pt_exp, overwrite = TRUE)

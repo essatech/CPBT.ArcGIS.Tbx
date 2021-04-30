@@ -80,17 +80,31 @@ Bldgs0 =  arc.data2sf(arcgeom)
 Bldgs = Bldgs0
 
 
+
+
 Vegetation0 <- in_params$Vegetation
+
+print("Vegetation object")
+print(Vegetation0)
+print(length(Vegetation0))
+
 if(length(Vegetation0) == 0){
+  
   Vegetation = NA
   print("No veg...")
+
 } else {
+  
   print("Using veg...")
   importGeom = arc.open(Vegetation0)
   arcgeom = arc.select(importGeom)
   Vegetation =  arc.data2sf(arcgeom)
   Vegetation = Vegetation
+
 }
+
+
+
 
 
 
