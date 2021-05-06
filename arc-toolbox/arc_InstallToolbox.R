@@ -6,7 +6,7 @@ if(!("remotes" %in% rownames(installed.packages()))){
     # install.packages("remotes")
 }
 
-install.packages("remotes", upgrade ='always', force = TRUE)
+install.packages("remotes", dependencies=TRUE, repos='http://cran.rstudio.com/')
 
 
 print("Load remotes")

@@ -31,6 +31,8 @@ PropValue <- in_params$PropValue
 disc <- in_params$disc
 TimeHoriz <- in_params$TimeHoriz
 
+Scenario_Description <- in_params$Scenario_Description
+
 
 #=========================================
 # Load and sanitize all spatial inputs
@@ -97,9 +99,12 @@ if(length(Vegetation0) == 0){
   
   print("Using veg...")
   importGeom = arc.open(Vegetation0)
+  print("Step 1...")
   arcgeom = arc.select(importGeom)
-  Vegetation =  arc.data2sf(arcgeom)
-  Vegetation = Vegetation
+  print("Step 2...")
+  Vegetation =  arc.data2sp(arcgeom)
+  print("Step 3...")
+  Vegetation = sf::st_as_sf(Vegetation)
 
 }
 
@@ -135,7 +140,8 @@ CPBT(
   TimeHoriz = TimeHoriz,
   Bldgs = Bldgs,
   export_report = TRUE,
-  export_spatial_dat = TRUE
+  export_spatial_dat = TRUE,
+  Scenario_Description = Scenario_Description
 )
 
 
