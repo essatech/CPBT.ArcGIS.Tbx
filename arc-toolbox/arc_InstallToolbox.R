@@ -18,6 +18,11 @@ if("MNAI.CPBT" %in% rownames(installed.packages())){
     #remove.packages("MNAI.CPBT")
 }
 
+# Install raster package dependencies
+install.packages(c("Rcpp", "rgdal", "sp", "raster"))
+
+
+
 print("Install MNAI.CPBT")
 remotes::install_github("essatech/MNAI.CPBT", upgrade ='always', force = TRUE)
 
