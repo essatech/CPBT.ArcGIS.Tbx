@@ -30,5 +30,28 @@ The **MNAI.CPBT** ArcGIS Toolbox requires ArcGIS Pro (basic or above) and the R-
 
 The above steps only need to be run once. If you wish to use the **MNAI.CPBT** ArcGIS Toolbox on another new or existing project, simply add the toolbox folder as a folder connection and the functions should be ready for use. If you encounter in issues with subsequent usages try running the * Install the CPBT * script again. If you encounter any problems in the installation process try updating the version of R on your computer (if it is below version 4.0.3).
 
+## Troubleshooting 
+
+The most likely source of potential errors are due to either installation issues or mismatched projections between input files. If you experience errors run through the following steps:
+1. When you launch ArcGIS Pro right click on the launch icon and click run as administrator. Some errors may be due to write permissions from user accounts.
+2. Download and install RTools (64 bit) [download link]( https://cran.r-project.org/bin/windows/Rtools/rtools40.html). RTools should not be a requirement for the CPBT, but there may be some issues trying to install the raster package. Restart your computer after you install RTools.
+3. Check to see if there are errors with the R raster package installation. Open R or RStudio, enter library(raster) and hit enter. If there are any errors or warning messages try reinstalling the R raster package by running the following command in R:
+```
+install.packages('raster', repos='https://rspatial.r-universe.dev')
+library(raster)
+```
+4. Try installing the CPBT from within R rather than within ArcGIS Pro. Close ArcGIS Pro and any other instances of R. Open R or RStudio and run the following commands
+```
+print("Install the remotes package to download the CPBT...")
+install.packages("remotes", dependencies=TRUE, repos='http://cran.rstudio.com/')
+print("Load remotes...")
+library(remotes)
+print("Install the MNAI.CPBT...")
+remotes::install_github("essatech/MNAI.CPBT", upgrade ='always', force = TRUE)
+# Choose 1: All if prompt to install dependencies
+```
+5. Open ArcGIS Pro and try running the CPBT again.
+ 
+
 
 
